@@ -12,6 +12,9 @@ concurrency:
   group: build-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build_ubuntu:
     strategy:
@@ -24,12 +27,17 @@ jobs:
       BUILD_CONFIGURATION: ${{matrix.configurations}}
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt install libboost-dev libboost-filesystem-dev libboost-program-options-dev libyaml-cpp-dev valgrind
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: 'recursive'
 
@@ -58,7 +66,12 @@ jobs:
       BUILD_CONFIGURATION: ${{matrix.configurations}}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: 'recursive'
 
